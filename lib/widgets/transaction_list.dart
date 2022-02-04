@@ -7,24 +7,26 @@ class TransactionEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          'No transaction added yet!',
-          style: Theme.of(context).textTheme.headline6,
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        SizedBox(
-          height: 200,
-          child: Image.asset(
-            'assets/images/waiting.png',
-            fit: BoxFit.cover,
+    return LayoutBuilder(builder: (ctx, constrains) {
+      return Column(
+        children: [
+          Text(
+            'No transaction added yet!',
+            style: Theme.of(context).textTheme.headline6,
           ),
-        )
-      ],
-    );
+          const SizedBox(
+            height: 20,
+          ),
+          SizedBox(
+            height: constrains.maxHeight * 0.6,
+            child: Image.asset(
+              'assets/images/waiting.png',
+              fit: BoxFit.cover,
+            ),
+          )
+        ],
+      );
+    });
   }
 }
 
@@ -52,7 +54,7 @@ class TransactionListView extends StatelessWidget {
             leading: CircleAvatar(
               radius: 30,
               child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(6),
                   child: FittedBox(
                     child: Text('\$${item.amount.toStringAsFixed(2)}'),
                   )),
@@ -67,11 +69,22 @@ class TransactionListView extends StatelessWidget {
                 fontWeight: FontWeight.w300,
               ),
             ),
-            trailing: IconButton(
-              onPressed: () => deleteItem(item.id),
-              icon: const Icon(Icons.delete),
-              color: Theme.of(context).errorColor,
-            ),
+            trailing: MediaQuery.of(context).size.width > 460
+                ? TextButton.icon(
+                    onPressed: () => deleteItem(item.id),
+                    icon: const Icon(Icons.delete),
+                    label: const Text('Delete'),
+                    // style: ButtonStyle(
+                    //   textStyle: TextStyle(
+                    //     color: Theme.of(context).errorColor,
+                    //   ),
+                    // ),
+                  )
+                : IconButton(
+                    onPressed: () => deleteItem(item.id),
+                    icon: const Icon(Icons.delete),
+                    color: Theme.of(context).errorColor,
+                  ),
           ),
         );
 
@@ -131,11 +144,8 @@ class TransactionList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 300,
-      child: items.isEmpty
-          ? const TransactionEmptyState()
-          : TransactionListView(items, deleteItem),
-    );
+    return items.isEmpty
+        ? const TransactionEmptyState()
+        : TransactionListView(items, deleteItem);
   }
 }

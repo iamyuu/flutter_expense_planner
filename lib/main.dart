@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
 import '../models/transaction.dart';
 import './widgets/new_transaction.dart';
 import './widgets/transaction_list.dart';
 import './widgets/chart.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.setPreferredOrientations(
+  //   [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
+  // );
+
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -53,7 +61,23 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<TransactionModel> _items = [];
+  bool _showChart = false;
+
+  final List<TransactionModel> _items = [
+    TransactionModel(
+      id: 't1',
+      title: 'New Shoes',
+      amount: 69.99,
+      date: DateTime.now(),
+    ),
+    TransactionModel(
+      id: 't2',
+      title: 'Weekly Groceries',
+      amount: 16.53,
+      date: DateTime.now(),
+    ),
+  ];
+
   List<TransactionModel> get _recentItems => _items
       .where(
         (element) => element.date.isAfter(
@@ -97,17 +121,31 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+
+    final appBar = AppBar(
+      centerTitle: false,
+      title: const Text('Flutter Demo'),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: () => _startAddNewTransaction(context),
+        )
+      ],
+    );
+
+    double appHeight = mediaQuery.size.height -
+        appBar.preferredSize.height -
+        mediaQuery.padding.top;
+
+    final transactionListWidget = SizedBox(
+      height: appHeight - 0.6,
+      child: TransactionList(_items, _deleteTransaction),
+    );
+
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: const Text('Flutter Demo'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => _startAddNewTransaction(context),
-          )
-        ],
-      ),
+      appBar: appBar,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
@@ -116,8 +154,34 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Chart(_recentItems),
-            TransactionList(_items, _deleteTransaction),
+            if (isLandscape)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Show Chart'),
+                  Switch(
+                    value: _showChart,
+                    onChanged: (value) {
+                      setState(() {
+                        _showChart = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            if (!isLandscape)
+              SizedBox(
+                height: appHeight * 0.3,
+                child: Chart(_recentItems),
+              ),
+            if (!isLandscape) transactionListWidget,
+            if (isLandscape)
+              _showChart
+                  ? SizedBox(
+                      height: appHeight * 0.7,
+                      child: Chart(_recentItems),
+                    )
+                  : transactionListWidget,
           ],
         ),
       ),

@@ -11,20 +11,7 @@ class UserTransaction extends StatefulWidget {
 }
 
 class _UserTransactionState extends State<UserTransaction> {
-  final List<TransactionModel> items = [
-    TransactionModel(
-      id: '1',
-      title: 'new Shoes',
-      amount: 70.00,
-      date: DateTime.now(),
-    ),
-    TransactionModel(
-      id: '2',
-      title: 'Weekly Groceries',
-      amount: 16.53,
-      date: DateTime.now(),
-    ),
-  ];
+  final List<TransactionModel> items = [];
 
   void _addTransaction(String newTitle, double newAmount) {
     final newTransaction = TransactionModel(
