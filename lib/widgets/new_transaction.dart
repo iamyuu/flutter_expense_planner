@@ -1,5 +1,8 @@
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import './adaptive_text_button.dart';
 
 class NewTrasacrtion extends StatefulWidget {
   const NewTrasacrtion(this.addTransaction, {Key? key}) : super(key: key);
@@ -88,29 +91,26 @@ class _NewTrasacrtionState extends State<NewTrasacrtion> {
                             : 'Picked date: ${DateFormat.yMd().format(_selectedDate!)}',
                       ),
                     ),
-                    TextButton(
-                      child: const Text('Choose Date'),
-                      style: TextButton.styleFrom(
-                        primary: Theme.of(context).primaryColor,
-                        textStyle: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: _openDatePicker,
-                    ),
+                    AdaptiveFlatButton('Choose Date', _openDatePicker),
                   ],
                 ),
               ),
-              ElevatedButton(
-                child: const Text('Add Transaction'),
-                style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).primaryColor,
-                  textStyle: TextStyle(
-                    color: Theme.of(context).textTheme.button?.color,
-                  ),
-                ),
-                onPressed: _submitHandler,
-              ),
+              Platform.isIOS
+                  ? CupertinoButton(
+                      child: const Text('Add Transaction'),
+                      color: Theme.of(context).primaryColor,
+                      onPressed: _submitHandler,
+                    )
+                  : ElevatedButton(
+                      child: const Text('Add Transaction'),
+                      style: ElevatedButton.styleFrom(
+                        primary: Theme.of(context).primaryColor,
+                        textStyle: TextStyle(
+                          color: Theme.of(context).textTheme.button?.color,
+                        ),
+                      ),
+                      onPressed: _submitHandler,
+                    ),
             ],
           ),
         ),
